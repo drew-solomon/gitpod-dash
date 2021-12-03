@@ -1,8 +1,9 @@
 import dash
 from dash import dash_table
 from dash import dcc # dash core components
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from dash import html
+import numpy as np
 
 import pandas as pd
 
@@ -28,6 +29,7 @@ app.layout = html.Div([
         options=[{'label': i, 'value': i} for i in df.columns],
         placeholder="Select values"
     ),
+    html.Button(id='submit-button-state', n_clicks=0, children='Create pivot table'),
     dash_table.DataTable(
         id='table',
         columns=[{"name": i, "id": i} for i in df.columns],
@@ -35,28 +37,35 @@ app.layout = html.Div([
     )
 ])
 
+# define the identity function
+def identity(x): return x
 
 # callback function to update pivot table based on selected inputs
 @app.callback(
     Output('table', 'data'),
     Output('table', 'columns'),
-    Input('index-dropdown', 'value'),
-    Input('columns-dropdown', 'value'),
-    Input('values-dropdown', 'value')
+    Input('submit-button-state', 'n_clicks'),
+    State('index-dropdown', 'value'),
+    State('columns-dropdown', 'value'),
+    State('values-dropdown', 'value')
     )
-def update_pivottable(selected_index, selected_columns, selected_values):
-    # define the identity function
-    def identity(x): return x
+def update_pivottable(n_clicks, selected_index, selected_columns, selected_values):
+    print(n_clicks)
+    print("index:", selected_index)
+    print("columns:", selected_columns)
+    print("values:", selected_values)
     pivot_table = df.pivot_table(
         index=selected_index,
         columns=selected_columns, 
         values=selected_values,
         aggfunc=identity,
     )
+    print(pivot_table)
     # pivot table dict
     pivot_table_dict = pivot_table.to_dict('records')
-    # pivot table columns
     pivot_table_columns = [{"name": i, "id": i} for i in pivot_table.columns]
+    #print("COLUMNS", pivot_table_columns)
+    #print("VALUES", pivot_table.values)
     return pivot_table_dict, pivot_table_columns
 
 app.run_server(debug=True, host="0.0.0.0")
