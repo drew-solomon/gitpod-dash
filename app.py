@@ -15,17 +15,20 @@ app.layout = html.Div([
     dcc.Dropdown(
         id='index-dropdown',
         options=[{'label': i, 'value': i} for i in df.columns],
-        value='Period'
+        value='Period',
+         placeholder="Select an index"
     ),
     dcc.Dropdown(
         id='columns-dropdown',
         options=[{'label': i, 'value': i} for i in df.columns],
-        value='Group'
+        value='Group',
+        placeholder="Select columns"
     ),
     dcc.Dropdown(
         id='values-dropdown',
         options=[{'label': i, 'value': i} for i in df.columns],
-        value='Element'
+        value='Element',
+        placeholder="Select values"
     ),
     dash_table.DataTable(
         id='table',
